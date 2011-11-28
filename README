@@ -1,0 +1,32 @@
+PlomWM version 0.1 / 2011-11-28
+
+PlomWM is @plomlompom's personal hack of Nick Welch's TinyWM, 
+done as a C and Xlib learning exercise. 
+(@plomlompom = Christian Heller / <c.heller@plomlompom.de>.)
+
+FILES
+-----
+
+Makefile: build system
+plomwm.c: the code
+COPYING: license (public domain)
+README: this file
+
+INSTALLATION
+------------
+
+Put "plomwm" into some path where it is executable and write
+something like this into your .xinitrc:
+
+#!/bin/sh
+plomwm &
+exec xterm
+
+USAGE
+-----
+
+Focus follows pointer.
+Button1 alone: raise window
+Alt+Button1, drag: interactive window move
+Alt+Button3, drag: interactive window resize
+Alt+F1: switch window from/to fullscreen
