@@ -34,6 +34,8 @@ USAGE
 TO DO
 -----
 
+* Reduce windows[] as windows get destroyed. Currently, the window list
+  only grows and grows and grows ...
 * Alt+Tab should switch between windows; backwards if Shift is added.
 * Maybe create some sort of visual window list.
 * Make Alt+F1 open a help screen, move fullscreen to Alt+F2.
