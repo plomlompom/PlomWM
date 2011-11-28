@@ -7,10 +7,10 @@ personal hack of Nick Welch's TinyWM, done as a C and Xlib learning exercise.
 FILES
 -----
 
-Makefile: build system
-plomwm.c: the code
-COPYING: license (public domain)
-README: this file
+* Makefile: build system
+* plomwm.c: the code
+* COPYING: license (public domain)
+* README: this file
 
 INSTALLATION
 ------------
@@ -25,8 +25,16 @@ exec xterm
 USAGE
 -----
 
-Focus follows pointer.
-Button1 alone: raise window
-Alt+Button1, drag: interactive window move
-Alt+Button3, drag: interactive window resize
-Alt+F1: switch window from/to fullscreen
+* Focus follows pointer.
+* Button1 alone: raise window
+* Alt+Button1, drag: interactive window move
+* Alt+Button3, drag: interactive window resize
+* Alt+F1: switch window from/to fullscreen
+
+TO DO
+-----
+
+* Alt+Tab should switch between windows, backwards so with SHIFT.
+* Maybe create some sort of visual window list.
+* Make Alt+F1 open a help screen, move fullscreen to Alt+F2.
+* Make Alt+F3 open a window-specific menu (for closing window etc.)
