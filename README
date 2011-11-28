@@ -34,7 +34,7 @@ USAGE
 TO DO
 -----
 
-* Alt+Tab should switch between windows, backwards so with SHIFT.
+* Alt+Tab should switch between windows; backwards if Shift is added.
 * Maybe create some sort of visual window list.
 * Make Alt+F1 open a help screen, move fullscreen to Alt+F2.
 * Make Alt+F3 open a window-specific menu (for closing window etc.)
