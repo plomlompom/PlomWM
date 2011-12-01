@@ -1,4 +1,4 @@
-/* PlomWM 0.1.1
+/* PlomWM 0.2
  * Written by Christian Heller <c.heller@plomlompom.de>
  * Based on Nick Welch's TinyWM */
 
@@ -33,6 +33,7 @@ int main(void) {
   /* Select and grab certain window and user action events / button and key presses from the X server. */
   XSelectInput(dpy, root, SubstructureNotifyMask);
   XGrabKey(dpy, XKeysymToKeycode(dpy, XStringToKeysym("F1")), Mod1Mask, root, True, GrabModeAsync, GrabModeAsync);
+  XGrabKey(dpy, XKeysymToKeycode(dpy, XStringToKeysym("Tab")), Mod1Mask, root, True, GrabModeAsync, GrabModeAsync);
   XGrabButton(dpy, 1, AnyModifier, root, True, ButtonPressMask, GrabModeAsync, GrabModeAsync, None, None);
   XGrabButton(dpy, 3, Mod1Mask, root, True, ButtonPressMask, GrabModeAsync, GrabModeAsync, None, None);
 
@@ -45,15 +46,22 @@ int main(void) {
   for (;;) {
     XNextEvent(dpy, &ev);
 
-    /* F1+ALT key press switches to fullscreen or back again (to the last non-fullscreen geometry). */
-    if (ev.type == KeyPress && ev.xkey.subwindow != None) { 
-      int i = window_i(windows, ev.xkey.subwindow);
-      if (windows[i].fullscreen == 0) {
-        XMoveResizeWindow(dpy, ev.xkey.subwindow, 0, 0, full_width, full_height);
-        windows[i].fullscreen = 1; }
-      else {
-        XMoveResizeWindow(dpy, ev.xkey.subwindow, windows[i].x, windows[i].y, windows[i].width, windows[i].height); 
-        windows[i].fullscreen = 0; } }
+    if (ev.type == KeyPress) {
+
+      /* F1+ALT key press switches to fullscreen or back again (to the last non-fullscreen geometry). */
+      if (ev.xkey.keycode == XKeysymToKeycode(dpy, XStringToKeysym("F1")) ) {
+        if (ev.type == KeyPress && ev.xkey.subwindow != None) { 
+          int i = window_i(windows, ev.xkey.subwindow);
+          if (windows[i].fullscreen == 0) {
+            XMoveResizeWindow(dpy, ev.xkey.subwindow, 0, 0, full_width, full_height);
+            windows[i].fullscreen = 1; }
+          else {
+            XMoveResizeWindow(dpy, ev.xkey.subwindow, windows[i].x, windows[i].y, windows[i].width, windows[i].height); 
+            windows[i].fullscreen = 0; } } }
+      
+      /* TAB+ALT switches next window to top. */
+      else if (ev.xkey.keycode == XKeysymToKeycode(dpy, XStringToKeysym("Tab")) ) {
+        XCirculateSubwindows(dpy, root, RaiseLowest); } }
 
     else if (ev.type == ButtonPress && ev.xbutton.subwindow != None) { 
       /* At button press + ALT, record current window attributes and start grabbing the pointer's motion. */
@@ -62,9 +70,10 @@ int main(void) {
                      GrabModeAsync, GrabModeAsync, None, None, CurrentTime);
         XGetWindowAttributes(dpy, ev.xbutton.subwindow, &attr);
         start = ev.xbutton; }
+
      /* If button is pressed over a window without ALT, raise that window. */
-     else
-        XRaiseWindow(dpy, ev.xbutton.subwindow); }
+     else {
+        XRaiseWindow(dpy, ev.xbutton.subwindow); } }
 
     /* As long as pointer's motion is grabbed, keep changing the window's geometry. */
     else if (ev.type == MotionNotify) {
