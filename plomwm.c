@@ -1,4 +1,4 @@
-/* PlomWM 0.1 
+/* PlomWM 0.1.1
  * Written by Christian Heller <c.heller@plomlompom.de>
  * Based on Nick Welch's TinyWM */
 
@@ -97,4 +97,12 @@ int main(void) {
       windows = realloc(windows, (w_i + 1) * sizeof(wdata));
       windows[w_i].id = ev.xcreatewindow.window;
       windows[w_i].fullscreen = 0; 
-      w_i++; } } }
+      w_i++; } 
+
+    /* If a window is destroyed, shrink windows[]. */
+    else if (ev.type == DestroyNotify) {
+      w_i--;
+      int i = window_i(windows, ev.xdestroywindow.window);
+      if ( i != w_i) {
+        windows[i] = windows[w_i]; }
+      windows = realloc(windows, (w_i + 1) * sizeof(wdata)); } } }
