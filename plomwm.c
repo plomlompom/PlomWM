@@ -1,4 +1,4 @@
-/* PlomWM 0.2.1
+/* PlomWM 0.2.2
  * Written by Christian Heller <c.heller@plomlompom.de>
  * Based on Nick Welch's TinyWM */
 
@@ -32,7 +32,7 @@ int main(void) {
 
   /* Select and grab certain window and user action events / button and key presses from the X server. */
   XSelectInput(dpy, root, SubstructureNotifyMask);
-  XGrabKey(dpy, XKeysymToKeycode(dpy, XStringToKeysym("F1")), Mod1Mask, root, True, GrabModeAsync, GrabModeAsync);
+  XGrabKey(dpy, XKeysymToKeycode(dpy, XStringToKeysym("F11")), Mod1Mask, root, True, GrabModeAsync, GrabModeAsync);
   XGrabKey(dpy, XKeysymToKeycode(dpy, XStringToKeysym("Tab")), Mod1Mask, root, True, GrabModeAsync, GrabModeAsync);
   XGrabKey(dpy, XKeysymToKeycode(dpy, XStringToKeysym("Tab")), Mod1Mask | ShiftMask, root, True, GrabModeAsync, 
 GrabModeAsync);
@@ -51,7 +51,7 @@ GrabModeAsync);
     if (ev.type == KeyPress) {
 
       /* F1+ALT key press switches to fullscreen or back again (to the last non-fullscreen geometry). */
-      if (ev.xkey.keycode == XKeysymToKeycode(dpy, XStringToKeysym("F1")) ) {
+      if (ev.xkey.keycode == XKeysymToKeycode(dpy, XStringToKeysym("F11")) ) {
         if (ev.type == KeyPress && ev.xkey.subwindow != None) { 
           int i = window_i(windows, ev.xkey.subwindow);
           if (windows[i].fullscreen == 0) {
