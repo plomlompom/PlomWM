@@ -73,8 +73,8 @@ int main(void) {
         XGetWindowAttributes(dpy, ev.xbutton.subwindow, &attr);
         start = ev.xbutton; }
 
-     /* If button is pressed over a window without ALT, raise that window. */
-     else {
+      /* If button is pressed over a window without ALT, raise that window. */
+      else {
         XRaiseWindow(dpy, ev.xbutton.subwindow); } }
 
     /* As long as pointer's motion is grabbed, keep changing the window's geometry. */
