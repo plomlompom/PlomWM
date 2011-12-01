@@ -1,4 +1,4 @@
-/* PlomWM 0.2
+/* PlomWM 0.2.1
  * Written by Christian Heller <c.heller@plomlompom.de>
  * Based on Nick Welch's TinyWM */
 
@@ -34,6 +34,8 @@ int main(void) {
   XSelectInput(dpy, root, SubstructureNotifyMask);
   XGrabKey(dpy, XKeysymToKeycode(dpy, XStringToKeysym("F1")), Mod1Mask, root, True, GrabModeAsync, GrabModeAsync);
   XGrabKey(dpy, XKeysymToKeycode(dpy, XStringToKeysym("Tab")), Mod1Mask, root, True, GrabModeAsync, GrabModeAsync);
+  XGrabKey(dpy, XKeysymToKeycode(dpy, XStringToKeysym("Tab")), Mod1Mask | ShiftMask, root, True, GrabModeAsync, 
+GrabModeAsync);
   XGrabButton(dpy, 1, AnyModifier, root, True, ButtonPressMask, GrabModeAsync, GrabModeAsync, None, None);
   XGrabButton(dpy, 3, Mod1Mask, root, True, ButtonPressMask, GrabModeAsync, GrabModeAsync, None, None);
 
@@ -59,9 +61,10 @@ int main(void) {
             XMoveResizeWindow(dpy, ev.xkey.subwindow, windows[i].x, windows[i].y, windows[i].width, windows[i].height); 
             windows[i].fullscreen = 0; } } }
       
-      /* TAB+ALT switches next window to top. */
+      /* TAB+ALT circulates the window stacking order. Add SHIFT to do it backwards. */
       else if (ev.xkey.keycode == XKeysymToKeycode(dpy, XStringToKeysym("Tab")) ) {
-        XCirculateSubwindows(dpy, root, RaiseLowest); } }
+        if (ev.xkey.state == Mod1Mask) XCirculateSubwindows(dpy, root, RaiseLowest);
+        else                           XCirculateSubwindows(dpy, root, LowerHighest); } }
 
     else if (ev.type == ButtonPress && ev.xbutton.subwindow != None) { 
       /* At button press + ALT, record current window attributes and start grabbing the pointer's motion. */
