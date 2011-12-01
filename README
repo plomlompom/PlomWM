@@ -31,6 +31,7 @@ USAGE
 * Alt+Button3, drag: interactive window resize
 * Alt+F1: switch window from/to fullscreen
 * Alt+Tab: circulate through window stacking order
+* Alt+Tab+Shift: circulate through window stacking order backwards
 
 TO DO
 -----
