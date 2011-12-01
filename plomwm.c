@@ -50,7 +50,7 @@ GrabModeAsync);
 
     if (ev.type == KeyPress) {
 
-      /* F1+ALT key press switches to fullscreen or back again (to the last non-fullscreen geometry). */
+      /* F11+ALT key press switches to fullscreen or back again (to the last non-fullscreen geometry). */
       if (ev.xkey.keycode == XKeysymToKeycode(dpy, XStringToKeysym("F11")) ) {
         if (ev.type == KeyPress && ev.xkey.subwindow != None) { 
           int i = window_i(windows, ev.xkey.subwindow);
