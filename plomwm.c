@@ -1,7 +1,4 @@
-/* PlomWM 0.2.2
- * Written by Christian Heller <c.heller@plomlompom.de>
- * Based on Nick Welch's TinyWM */
-
+/* PlomWM 0.2.2 / written by Christian Heller <c.heller@plomlompom.de> / based on Nick Welch's TinyWM */
 #include <X11/Xlib.h>
 #include <stdlib.h>
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
@@ -14,10 +11,9 @@ typedef struct {
 int window_i(wdata windows[], Window window) {
 /* Return index of a given window in windows[]. */
   int i, j;
-  for ( j = 0; 1 ; j++ ) {
+  for ( j = 0; ; j++ ) {
     if ( windows[j].id == window ) {
-      i = j;
-      break; } }
+      i = j; break; } }
   return i; }
 
 int main(void) {
@@ -73,19 +69,18 @@ int main(void) {
         XGetWindowAttributes(dpy, ev.xbutton.subwindow, &attr);
         start = ev.xbutton; }
 
-      /* If button is pressed over a window without ALT, raise that window. */
-      else {
-        XRaiseWindow(dpy, ev.xbutton.subwindow); } }
+      /* If button is pressed without ALT over a window, raise that window. */
+      else { XRaiseWindow(dpy, ev.xbutton.subwindow); } }
 
     /* As long as pointer's motion is grabbed, keep changing the window's geometry. */
     else if (ev.type == MotionNotify) {
       while (XCheckTypedEvent(dpy, MotionNotify, &ev));
-      int xdiff = ev.xbutton.x_root - start.x_root; int ydiff = ev.xbutton.y_root - start.y_root;
-      XMoveResizeWindow(dpy, ev.xmotion.window,
-                        attr.x + (start.button == 1 ? xdiff : 0),
-                        attr.y + (start.button == 1 ? ydiff : 0),
-                        MAX(1, attr.width + (start.button == 3 ? xdiff : 0)),
-                        MAX(1, attr.height + (start.button == 3 ? ydiff : 0)));
+      int xdiff = ev.xbutton.x_root - start.x_root;
+      int ydiff = ev.xbutton.y_root - start.y_root;
+      XMoveResizeWindow(dpy, ev.xmotion.window, attr.x + (start.button == 1 ? xdiff : 0),
+                                                attr.y + (start.button == 1 ? ydiff : 0),
+                                                MAX(1, attr.width + (start.button == 3 ? xdiff : 0)),
+                                                MAX(1, attr.height + (start.button == 3 ? ydiff : 0)));
       int i = window_i(windows, ev.xmotion.window);
       windows[i].fullscreen = 0; }
 
@@ -99,9 +94,8 @@ int main(void) {
     else if (ev.type == ConfigureNotify) {
       int i = window_i(windows, ev.xconfigure.window);
       if ( windows[i].fullscreen == 0 ) {
-        int x = ev.xconfigure.x; int y = ev.xconfigure.y; 
-        int width = ev.xconfigure.width; int height = ev.xconfigure.height;
-        windows[i].x = x; windows[i].y = y; windows[i].width = width; windows[i].height = height; } } 
+        windows[i].x     = ev.xconfigure.x;     windows[i].y      = ev.xconfigure.y;
+        windows[i].width = ev.xconfigure.width; windows[i].height = ev.xconfigure.height; } } 
 
     /* If a new window is created, add its id to windows[] and augment the window counter. */
     else if (ev.type == CreateNotify) {
