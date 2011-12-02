@@ -28,11 +28,11 @@ int main(void) {
 
   /* Select and grab certain window and user action events / button and key presses from the X server. */
   XSelectInput(dpy, root, SubstructureNotifyMask);
-  XGrabKey(dpy, XKeysymToKeycode(dpy, XStringToKeysym("F11")), Mod1Mask, root, True, GrabModeAsync, GrabModeAsync);
-  XGrabKey(dpy, XKeysymToKeycode(dpy, XStringToKeysym("Tab")), Mod1Mask, root, True, GrabModeAsync, GrabModeAsync);
+  XGrabKey(dpy, XKeysymToKeycode(dpy, XStringToKeysym("F11")), Mod1Mask,           root, True, GrabModeAsync, GrabModeAsync);
+  XGrabKey(dpy, XKeysymToKeycode(dpy, XStringToKeysym("Tab")), Mod1Mask,           root, True, GrabModeAsync, GrabModeAsync);
   XGrabKey(dpy, XKeysymToKeycode(dpy, XStringToKeysym("Tab")), Mod1Mask|ShiftMask, root, True, GrabModeAsync, GrabModeAsync);
   XGrabButton(dpy, 1, AnyModifier, root, True, ButtonPressMask, GrabModeAsync, GrabModeAsync, None, None);
-  XGrabButton(dpy, 3, Mod1Mask, root, True, ButtonPressMask, GrabModeAsync, GrabModeAsync, None, None);
+  XGrabButton(dpy, 3, Mod1Mask,    root, True, ButtonPressMask, GrabModeAsync, GrabModeAsync, None, None);
 
   /* Database for window ids and geometries. */
   wdata * windows = malloc(0);
@@ -44,8 +44,7 @@ int main(void) {
     XNextEvent(dpy, &ev);
 
     if (ev.type == KeyPress) {
-
-      /* F11+ALT key press switches to fullscreen or back again (to the last non-fullscreen geometry). */
+      /* F11+ALT switches to fullscreen or back again (to the last non-fullscreen geometry). */
       if (ev.xkey.keycode == XKeysymToKeycode(dpy, XStringToKeysym("F11")) ) {
         if (ev.type == KeyPress && ev.xkey.subwindow != None) { 
           int i = window_i(windows, ev.xkey.subwindow);
@@ -79,7 +78,7 @@ int main(void) {
       int ydiff = ev.xbutton.y_root - start.y_root;
       XMoveResizeWindow(dpy, ev.xmotion.window, attr.x + (start.button == 1 ? xdiff : 0),
                                                 attr.y + (start.button == 1 ? ydiff : 0),
-                                                MAX(1, attr.width + (start.button == 3 ? xdiff : 0)),
+                                                MAX(1, attr.width  + (start.button == 3 ? xdiff : 0)),
                                                 MAX(1, attr.height + (start.button == 3 ? ydiff : 0)));
       int i = window_i(windows, ev.xmotion.window);
       windows[i].fullscreen = 0; }
@@ -108,6 +107,5 @@ int main(void) {
     else if (ev.type == DestroyNotify) {
       w_i--;
       int i = window_i(windows, ev.xdestroywindow.window);
-      if ( i != w_i) {
-        windows[i] = windows[w_i]; }
+      if ( i != w_i) { windows[i] = windows[w_i]; }
       windows = realloc(windows, (w_i + 1) * sizeof(wdata)); } } }
