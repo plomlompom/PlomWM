@@ -25,26 +25,32 @@ exec xterm
 USAGE
 -----
 
+(On PC keyboards, "Mod4" should be the Windows key.)
+
 * Focus follows pointer.
-* Button1 alone: raise window
-* Alt+Button1, drag: interactive window move
-* Alt+Button3, drag: interactive window resize
-* Alt+F11: switch window from/to fullscreen
-* Alt+Tab: circulate through window stacking order
-* Alt+Tab+Shift: circulate through window stacking order backwards
+* Mod4+Button: raise window below pointer.
+* Mod4+Button1, drag: interactive window move.
+* Mod4+Button3, drag: interactive window resize.
+* Mod4+F11: switch window from/to fullscreen.
+* Mod4+Tab: circulate through window stacking order.
+* Mod4+Tab+Shift: circulate through window stacking order backwards.
 
 TO DO
 -----
 
-* There seems to be some unholy confusion between what PlomWM grabs
-  as user input and what is available to programs in subwindows.
 * Maybe create some sort of visual window list.
-* Make Alt+F1 open a help screen.
-* Make Alt+F3 open a window-specific menu (for closing window etc.)
+* Make Tab+F1 open a help screen.
+* Make Tab+F3 open a window-specific menu (for closing window etc.)
 
 CHANGELOG
 ---------
 
+* 2011-12-10 v. 0.3
+  * Window manipulation is now initiated with Mod4 (Windows key) instead of Mod1 (Alt).
+  * Data for switching between fullscreen and normal window size is now collected in the X window properties.
+  * Any window manipluation now raises the window affected.
+  * Major parts of code rewritten and re-formatted.
+  * The changes above resolve some problems with grabbing of user input and keeping track of windows.
 * 2011-12-02 v. 0.2.11
   * Moved Fullscreen from ALT+F1 to ALT+F11.
 * 2011-12-02 v. 0.2.1

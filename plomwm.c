@@ -1,111 +1,111 @@
-/* PlomWM 0.2.2 / written by Christian Heller <c.heller@plomlompom.de> / based on Nick Welch's TinyWM */
-#include <X11/Xlib.h>
+/* PlomWM 0.3 / written by Christian Heller <c.heller@plomlompom.de> / based on Nick Welch's TinyWM */
 #include <stdlib.h>
+#include <X11/Xlib.h>
+#include <X11/Xatom.h>
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
-
-/* wdata type ties together relevant data about a window: its id, its geometry */
-typedef struct {
-  Window id;
-  int x, y, width, height, fullscreen; } wdata;
-
-int window_i(wdata windows[], Window window) {
-/* Return index of a given window in windows[]. */
-  int i, j;
-  for ( j = 0; ; j++ ) {
-    if ( windows[j].id == window ) {
-      i = j; break; } }
-  return i; }
 
 int main(void) {
   /* Connect to X server and determine root window. */
   Display * dpy = XOpenDisplay(NULL);
-  Window root = DefaultRootWindow(dpy);
+  Window root   = DefaultRootWindow(dpy);
 
-  /* Determine fullscreen geometry from root window. */
-  XWindowAttributes x; int full_width, full_height;
+  /* Stuff needed for window properties manipulation. */
+  Atom IsFullscreen = XInternAtom(dpy, "PLOMWM_ISFULLSCREEN", False);
+  Atom Geometry     = XInternAtom(dpy, "PLOMWM_GEOMETRY",     False);
+  Atom            dump_atom; 
+  int             dump_int;
+  unsigned long   dump_long;
+  unsigned char * r_fullscreen;
+  char            a_fullscreen[1];
+  short *         r_geometry;
+  short           a_geometry[4];
+
+  /* Get fullscreen geometry. */
+  XWindowAttributes x;
   XGetWindowAttributes(dpy, root, &x);
-  full_width = x.width; full_height = x.height;
+  int full_width  = x.width; 
+  int full_height = x.height;
 
-  /* Select and grab certain window and user action events / button and key presses from the X server. */
+  /* Select / grab certain window and user action events. */
   XSelectInput(dpy, root, SubstructureNotifyMask);
-  XGrabKey(dpy, XKeysymToKeycode(dpy, XStringToKeysym("F11")), Mod1Mask,           root, True, GrabModeAsync, GrabModeAsync);
-  XGrabKey(dpy, XKeysymToKeycode(dpy, XStringToKeysym("Tab")), Mod1Mask,           root, True, GrabModeAsync, GrabModeAsync);
-  XGrabKey(dpy, XKeysymToKeycode(dpy, XStringToKeysym("Tab")), Mod1Mask|ShiftMask, root, True, GrabModeAsync, GrabModeAsync);
-  XGrabButton(dpy, 1, AnyModifier, root, True, ButtonPressMask, GrabModeAsync, GrabModeAsync, None, None);
-  XGrabButton(dpy, 3, Mod1Mask,    root, True, ButtonPressMask, GrabModeAsync, GrabModeAsync, None, None);
-
-  /* Database for window ids and geometries. */
-  wdata * windows = malloc(0);
-  int w_i = 0;
+  XGrabKey(dpy, XKeysymToKeycode(dpy, XStringToKeysym("F11")), Mod4Mask,           root, True, GrabModeAsync, GrabModeAsync);
+  XGrabKey(dpy, XKeysymToKeycode(dpy, XStringToKeysym("Tab")), Mod4Mask,           root, True, GrabModeAsync, GrabModeAsync);
+  XGrabKey(dpy, XKeysymToKeycode(dpy, XStringToKeysym("Tab")), Mod4Mask|ShiftMask, root, True, GrabModeAsync, GrabModeAsync);
+  XGrabButton(dpy, 1, Mod4Mask, root, True, ButtonPressMask, GrabModeAsync, GrabModeAsync, None, None);
+  XGrabButton(dpy, 3, Mod4Mask, root, True, ButtonPressMask, GrabModeAsync, GrabModeAsync, None, None);
 
   /* Window event loop. */
-  XWindowAttributes attr; XButtonEvent start; XEvent ev;
+  XWindowAttributes attr;
+  XButtonEvent start;
+  XEvent ev;
   for (;;) {
     XNextEvent(dpy, &ev);
 
-    if (ev.type == KeyPress) {
-      /* F11+ALT switches to fullscreen or back again (to the last non-fullscreen geometry). */
+    if (ev.type == KeyPress && ev.xkey.subwindow != None) {
+      /* Catch Mod4+F11 for toggling fullscreen view of window under cursor. */
       if (ev.xkey.keycode == XKeysymToKeycode(dpy, XStringToKeysym("F11")) ) {
-        if (ev.type == KeyPress && ev.xkey.subwindow != None) { 
-          int i = window_i(windows, ev.xkey.subwindow);
-          if (windows[i].fullscreen == 0) {
+          XRaiseWindow(dpy, ev.xkey.subwindow); 
+          XGetWindowProperty(dpy, ev.xkey.subwindow, IsFullscreen, 0, 1, False, XA_INTEGER, 
+                             &dump_atom, &dump_int, &dump_long, &dump_long, &r_fullscreen); 
+          if ( r_fullscreen[0] == 0 ) {
             XMoveResizeWindow(dpy, ev.xkey.subwindow, 0, 0, full_width, full_height);
-            windows[i].fullscreen = 1; }
+            a_fullscreen[0] = 1;
+            XChangeProperty(dpy, ev.xkey.subwindow, IsFullscreen, XA_INTEGER, 8, 
+                            PropModeReplace, (unsigned char *) &a_fullscreen, 1); }
           else {
-            XMoveResizeWindow(dpy, ev.xkey.subwindow, windows[i].x, windows[i].y, windows[i].width, windows[i].height); 
-            windows[i].fullscreen = 0; } } }
-      
-      /* TAB+ALT circulates the window stacking order. Add SHIFT to do it backwards. */
+            XGetWindowProperty(dpy, ev.xkey.subwindow, Geometry, 0, 2, False, XA_INTEGER,
+                               &dump_atom, &dump_int, &dump_long, &dump_long, (unsigned char **) &r_geometry);
+            XMoveResizeWindow(dpy, ev.xkey.subwindow, r_geometry[0], r_geometry[1], r_geometry[2], r_geometry[3]);
+            a_fullscreen[0] = 0;
+            XChangeProperty(dpy, ev.xkey.subwindow, IsFullscreen, XA_INTEGER, 8,
+                            PropModeReplace, (unsigned char *) &a_fullscreen, 1); } }
+
+      /* Mod4+Tab circulates window stacking order. Mod4+Tab+Shift does it backwards. */
       else if (ev.xkey.keycode == XKeysymToKeycode(dpy, XStringToKeysym("Tab")) ) {
-        if (ev.xkey.state == Mod1Mask) XCirculateSubwindows(dpy, root, RaiseLowest);
-        else                           XCirculateSubwindows(dpy, root, LowerHighest); } }
+        if (ev.xkey.state == Mod4Mask)
+          XCirculateSubwindows(dpy, root, RaiseLowest);
+        else if (ev.xkey.state == Mod4Mask|ShiftMask)
+          XCirculateSubwindows(dpy, root, LowerHighest); } }
 
+    /* At pointer button press + Mod4 key press, record current window attributes and start grabbing pointer's motion. */
     else if (ev.type == ButtonPress && ev.xbutton.subwindow != None) { 
-      /* At button press + ALT, record current window attributes and start grabbing the pointer's motion. */
-      if (ev.xbutton.state == Mod1Mask) {
-        XGrabPointer(dpy, ev.xbutton.subwindow, True, PointerMotionMask | ButtonReleaseMask,
-                     GrabModeAsync, GrabModeAsync, None, None, CurrentTime);
-        XGetWindowAttributes(dpy, ev.xbutton.subwindow, &attr);
-        start = ev.xbutton; }
+      XRaiseWindow(dpy, ev.xbutton.subwindow); 
+      XGrabPointer(dpy, ev.xbutton.subwindow, True, PointerMotionMask | ButtonReleaseMask, 
+                   GrabModeAsync, GrabModeAsync, None, None, CurrentTime);
+      XGetWindowAttributes(dpy, ev.xbutton.subwindow, &attr);
+      start = ev.xbutton; }
 
-      /* If button is pressed without ALT over a window, raise that window. */
-      else { XRaiseWindow(dpy, ev.xbutton.subwindow); } }
-
-    /* As long as pointer's motion is grabbed, keep changing the window's geometry. */
+    /* As long as pointer's motion is grabbed, keep changing the window's geometry and storing non-fullscreen state. */
     else if (ev.type == MotionNotify) {
       while (XCheckTypedEvent(dpy, MotionNotify, &ev));
       int xdiff = ev.xbutton.x_root - start.x_root;
       int ydiff = ev.xbutton.y_root - start.y_root;
       XMoveResizeWindow(dpy, ev.xmotion.window, attr.x + (start.button == 1 ? xdiff : 0),
                                                 attr.y + (start.button == 1 ? ydiff : 0),
-                                                MAX(1, attr.width  + (start.button == 3 ? xdiff : 0)),
-                                                MAX(1, attr.height + (start.button == 3 ? ydiff : 0)));
-      int i = window_i(windows, ev.xmotion.window);
-      windows[i].fullscreen = 0; }
+                                                MAX(1, attr.width  + (start.button == 3 ? xdiff : 0)), 
+                                                MAX(1, attr.height + (start.button == 3 ? ydiff : 0))); 
+      a_fullscreen[0] = 0;
+      XChangeProperty(dpy, ev.xmotion.window, IsFullscreen, XA_INTEGER, 8,
+                      PropModeReplace, (unsigned char *) &a_fullscreen, 1); }
 
-    /* As button is released, stop grabbing the pointer's motion. */
-    else if (ev.type == ButtonRelease)
-    { XUngrabPointer(dpy, CurrentTime);
-      int i = window_i(windows, ev.xbutton.window); 
-      windows[i].fullscreen = 0; }
+    /* As button is released, stop grabbing the pointer's motion and store non-fullscreen state. */
+    else if (ev.type == ButtonRelease) {
+      XUngrabPointer(dpy, CurrentTime); }  
 
-    /* As window geometry is configured, record it to windows[] as long as it is not fullscreened. */
+    /* Each time a window is (re-)configured to a non-fullscreen-state, store its geometry properties. */
     else if (ev.type == ConfigureNotify) {
-      int i = window_i(windows, ev.xconfigure.window);
-      if ( windows[i].fullscreen == 0 ) {
-        windows[i].x     = ev.xconfigure.x;     windows[i].y      = ev.xconfigure.y;
-        windows[i].width = ev.xconfigure.width; windows[i].height = ev.xconfigure.height; } } 
+     XGetWindowProperty(dpy, ev.xconfigure.window, IsFullscreen, 0, 1, False, XA_INTEGER, 
+                        &dump_atom, &dump_int, &dump_long, &dump_long, &r_fullscreen); 
+     if ( r_fullscreen[0] == 0 ) {     
+       a_geometry[0] = ev.xconfigure.x;
+       a_geometry[1] = ev.xconfigure.y;
+       a_geometry[2] = ev.xconfigure.width;
+       a_geometry[3] = ev.xconfigure.height;
+       XChangeProperty(dpy, ev.xconfigure.window, Geometry, XA_INTEGER, 16,
+                       PropModeReplace, (unsigned char *) &a_geometry, 4); } }
 
-    /* If a new window is created, add its id to windows[] and augment the window counter. */
+    /* If a window is created, store its fullscreen property, assuming it to be negative. */
     else if (ev.type == CreateNotify) {
-      windows = realloc(windows, (w_i + 1) * sizeof(wdata));
-      windows[w_i].id = ev.xcreatewindow.window;
-      windows[w_i].fullscreen = 0; 
-      w_i++; } 
-
-    /* If a window is destroyed, shrink windows[]. */
-    else if (ev.type == DestroyNotify) {
-      w_i--;
-      int i = window_i(windows, ev.xdestroywindow.window);
-      if ( i != w_i) { windows[i] = windows[w_i]; }
-      windows = realloc(windows, (w_i + 1) * sizeof(wdata)); } } }
+      a_fullscreen[0] = 0;
+      XChangeProperty(dpy, ev.xcreatewindow.window, IsFullscreen, XA_INTEGER, 8, 
+                      PropModeReplace, (unsigned char *) &a_fullscreen, 1); } } }
