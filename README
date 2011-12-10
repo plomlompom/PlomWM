@@ -1,4 +1,4 @@
-PlomWM version 0.2.2 / 2011-12-01
+PlomWM version 0.3 / 2011-12-10
 
 PlomWM is an extremely primitive X window manager and @plomlompom's 
 personal hack of Nick Welch's TinyWM, done as a C and Xlib learning exercise. 
@@ -51,7 +51,7 @@ CHANGELOG
   * Any window manipluation now raises the window affected.
   * Major parts of code rewritten and re-formatted.
   * The changes above resolve some problems with grabbing of user input and keeping track of windows.
-* 2011-12-02 v. 0.2.11
+* 2011-12-02 v. 0.2.2
   * Moved Fullscreen from ALT+F1 to ALT+F11.
 * 2011-12-02 v. 0.2.1
   * Alt+Tab*Shift circulates through window stacking order backwards.
