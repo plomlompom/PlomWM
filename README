@@ -28,10 +28,10 @@ USAGE
 (On PC keyboards, "Mod4" should be the Windows key.)
 
 * Focus follows pointer.
-* Mod4+Button: raise window below pointer.
+* Mod4+Button1 or Mod4+Button3: raise window below pointer.
 * Mod4+Button1, drag: interactive window move.
 * Mod4+Button3, drag: interactive window resize.
-* Mod4+F11: switch window from/to fullscreen.
+* Mod4+F11: switch (and raise) window below pointer from/to fullscreen.
 * Mod4+Tab: circulate through window stacking order.
 * Mod4+Tab+Shift: circulate through window stacking order backwards.
 
