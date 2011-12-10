@@ -39,8 +39,8 @@ TO DO
 -----
 
 * Maybe create some sort of visual window list.
-* Make Tab+F1 open a help screen.
-* Make Tab+F3 open a window-specific menu (for closing window etc.)
+* Make Mod4+F1 open a help screen.
+* Make Mod4+F3 open a window-specific menu (for closing window etc.)
 
 CHANGELOG
 ---------
