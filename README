@@ -38,6 +38,7 @@ USAGE
 TO DO
 -----
 
+* Some X programs steal focus and don't return it until closed. Rectify this
 * Maybe create some sort of visual window list.
 * Make Mod4+F1 open a help screen.
 * Make Mod4+F3 open a window-specific menu (for closing window etc.)
