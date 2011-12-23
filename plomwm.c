@@ -1,4 +1,4 @@
-/* PlomWM 0.3 / written by Christian Heller <c.heller@plomlompom.de> / based on Nick Welch's TinyWM */
+/* PlomWM 0.4 / written by Christian Heller <c.heller@plomlompom.de> / based on Nick Welch's TinyWM */
 #include <stdlib.h>
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
@@ -27,7 +27,7 @@ int main(void) {
   int full_height = x.height;
 
   /* Select / grab certain window and user action events. */
-  XSelectInput(dpy, root, SubstructureNotifyMask);
+  XSelectInput(dpy, root, SubstructureNotifyMask | EnterWindowMask);
   XGrabKey(dpy, XKeysymToKeycode(dpy, XStringToKeysym("F11")), Mod4Mask,           root, True, GrabModeAsync, GrabModeAsync);
   XGrabKey(dpy, XKeysymToKeycode(dpy, XStringToKeysym("Tab")), Mod4Mask,           root, True, GrabModeAsync, GrabModeAsync);
   XGrabKey(dpy, XKeysymToKeycode(dpy, XStringToKeysym("Tab")), Mod4Mask|ShiftMask, root, True, GrabModeAsync, GrabModeAsync);
@@ -108,4 +108,9 @@ int main(void) {
     else if (ev.type == CreateNotify) {
       a_fullscreen[0] = 0;
       XChangeProperty(dpy, ev.xcreatewindow.window, IsFullscreen, XA_INTEGER, 8, 
-                      PropModeReplace, (unsigned char *) &a_fullscreen, 1); } } }
+                      PropModeReplace, (unsigned char *) &a_fullscreen, 1); } 
+
+    /* Force focus-follows-pointer to prevent focus stealing. */
+    else if (ev.type == EnterNotify) {
+      Window entered = ev.xcrossing.window;
+      XSetInputFocus(dpy, entered, None, CurrentTime); } } }
