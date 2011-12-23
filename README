@@ -38,6 +38,7 @@ USAGE
 TO DO
 -----
 
+* Focus stealing prevention does not work yet completely (but much better than before). Improve it!
 * Maybe create some sort of visual window list.
 * Make Mod4+F1 open a help screen.
 * Make Mod4+F3 open a window-specific menu (for closing window etc.)
