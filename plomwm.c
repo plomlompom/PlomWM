@@ -1,4 +1,4 @@
-/* PlomWM 0.4 / written by Christian Heller <c.heller@plomlompom.de> / based on Nick Welch's TinyWM */
+/* PlomWM 0.4.1 / written by Christian Heller <c.heller@plomlompom.de> / based on Nick Welch's TinyWM */
 #include <stdlib.h>
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
@@ -20,6 +20,9 @@ int main(void) {
   short *         r_geometry;
   short           a_geometry[4];
 
+  # Store the correct focus in here, for focus stealing prevention.
+  Window focus;
+
   /* Get fullscreen geometry. */
   XWindowAttributes x;
   XGetWindowAttributes(dpy, root, &x);
@@ -27,7 +30,7 @@ int main(void) {
   int full_height = x.height;
 
   /* Select / grab certain window and user action events. */
-  XSelectInput(dpy, root, SubstructureNotifyMask | EnterWindowMask);
+  XSelectInput(dpy, root, SubstructureNotifyMask | EnterWindowMask | FocusChangeMask);
   XGrabKey(dpy, XKeysymToKeycode(dpy, XStringToKeysym("F11")), Mod4Mask,           root, True, GrabModeAsync, GrabModeAsync);
   XGrabKey(dpy, XKeysymToKeycode(dpy, XStringToKeysym("Tab")), Mod4Mask,           root, True, GrabModeAsync, GrabModeAsync);
   XGrabKey(dpy, XKeysymToKeycode(dpy, XStringToKeysym("Tab")), Mod4Mask|ShiftMask, root, True, GrabModeAsync, GrabModeAsync);
@@ -112,5 +115,10 @@ int main(void) {
 
     /* Force focus-follows-pointer to prevent focus stealing. */
     else if (ev.type == EnterNotify) {
-      Window entered = ev.xcrossing.window;
-      XSetInputFocus(dpy, entered, None, CurrentTime); } } }
+      focus = ev.xcrossing.window;
+      XSetInputFocus(dpy, focus, None, CurrentTime); } 
+
+    /* Detect and correct illegal FocusOut events to prevent focus stealing. */
+    else if (ev.type == FocusOut) {
+     if (focus && ev.xfocus.window == focus) {
+       XSetInputFocus(dpy, focus, None, CurrentTime); } } } }

@@ -1,4 +1,4 @@
-PlomWM version 0.4 / 2011-12-10
+PlomWM version 0.4.1 / 2011-12-25
 
 PlomWM is an extremely primitive X window manager and @plomlompom's 
 personal hack of Nick Welch's TinyWM, done as a C and Xlib learning exercise. 
@@ -46,6 +46,8 @@ TO DO
 CHANGELOG
 ---------
 
+* 2011-12-25 v. 0.4.1
+  * Improved focus stealing prevention. Checks for and corrects illegal FocusOut events now.
 * 2011-12-23 v. 0.4
   * Forced "focus follows pointer" in the code (as opposed to relying on X11 default) as focus stealing prevention. 
 * 2011-12-10 v. 0.3
