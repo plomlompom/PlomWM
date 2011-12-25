@@ -20,7 +20,7 @@ int main(void) {
   short *         r_geometry;
   short           a_geometry[4];
 
-  # Store the correct focus in here, for focus stealing prevention.
+  /* Store the correct focus in here, for focus stealing prevention. */
   Window focus;
 
   /* Get fullscreen geometry. */
