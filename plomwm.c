@@ -1,4 +1,4 @@
-/* PlomWM 0.4.3 / written by Christian Heller <c.heller@plomlompom.de> / based on Nick Welch's TinyWM */
+/* PlomWM 0.4.4 / written by Christian Heller <c.heller@plomlompom.de> / based on Nick Welch's TinyWM */
 #include <stdlib.h>
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
@@ -116,4 +116,7 @@ int main(void) {
     /* Force focus-follows-pointer to prevent focus stealing. */
     else if (ev.type == EnterNotify) {
       Window focus = ev.xcrossing.window;
-      XSetInputFocus(dpy, focus, None, CurrentTime); } } }
+      XWindowAttributes focus_attr;
+      XGetWindowAttributes(dpy, focus, &focus_attr);
+      if (focus_attr.map_state == IsViewable) { // Only focus windows that are viewable.
+        XSetInputFocus(dpy, focus, None, CurrentTime); } } } }

@@ -38,7 +38,6 @@ USAGE
 TO DO
 -----
 
-* There are some hard-to-reproduce crashes that should be fixed.
 * Maybe create some sort of visual window list.
 * Make Mod4+F1 open a help screen.
 * Make Mod4+F3 open a window-specific menu (for closing window etc.)
@@ -46,8 +45,10 @@ TO DO
 CHANGELOG
 ---------
 
+* 2011-12-26 v. 0.4.4
+  * Only call XSetInputFocus() on windows that are viewable. Eliminates some previous crash potential.
 * 2011-12-26 v. 0.4.3
-  Removed some unneded code.
+  * Removed some unneded code.
 * 2011-12-25 v. 0.4.2
   * Simplified focus stealing prevention. Don't check for FocusChangeEvents any more.
   * Instead, check EnterNotify for real (forgot previously to do it thoroughly).
