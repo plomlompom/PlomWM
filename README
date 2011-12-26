@@ -1,4 +1,4 @@
-PlomWM version 0.4.2 / 2011-12-25
+PlomWM version 0.4.3 / 2011-12-26
 
 PlomWM is an extremely primitive X window manager and @plomlompom's 
 personal hack of Nick Welch's TinyWM, done as a C and Xlib learning exercise. 
@@ -46,6 +46,8 @@ TO DO
 CHANGELOG
 ---------
 
+* 2011-12-26 v. 0.4.3
+  Removed some unneded code.
 * 2011-12-25 v. 0.4.2
   * Simplified focus stealing prevention. Don't check for FocusChangeEvents any more.
   * Instead, check EnterNotify for real (forgot previously to do it thoroughly).

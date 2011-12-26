@@ -1,4 +1,4 @@
-/* PlomWM 0.4.2 / written by Christian Heller <c.heller@plomlompom.de> / based on Nick Welch's TinyWM */
+/* PlomWM 0.4.3 / written by Christian Heller <c.heller@plomlompom.de> / based on Nick Welch's TinyWM */
 #include <stdlib.h>
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
@@ -27,7 +27,7 @@ int main(void) {
   int full_height = x.height;
 
   /* Select / grab certain window and user action events. */
-  XSelectInput(dpy, root, SubstructureNotifyMask | EnterWindowMask);
+  XSelectInput(dpy, root, SubstructureNotifyMask);
   XGrabKey(dpy, XKeysymToKeycode(dpy, XStringToKeysym("F11")), Mod4Mask,           root, True, GrabModeAsync, GrabModeAsync);
   XGrabKey(dpy, XKeysymToKeycode(dpy, XStringToKeysym("Tab")), Mod4Mask,           root, True, GrabModeAsync, GrabModeAsync);
   XGrabKey(dpy, XKeysymToKeycode(dpy, XStringToKeysym("Tab")), Mod4Mask|ShiftMask, root, True, GrabModeAsync, GrabModeAsync);
@@ -116,4 +116,4 @@ int main(void) {
     /* Force focus-follows-pointer to prevent focus stealing. */
     else if (ev.type == EnterNotify) {
       Window focus = ev.xcrossing.window;
-      if (focus) XSetInputFocus(dpy, focus, None, CurrentTime); } } }
+      XSetInputFocus(dpy, focus, None, CurrentTime); } } }
