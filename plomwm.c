@@ -35,7 +35,7 @@ int main(void) {
   XGrabButton(dpy, 3, Mod4Mask, root, True, ButtonPressMask, GrabModeAsync, GrabModeAsync, None, None);
 
   /* Window event loop. */
-  XWindowAttributes attr;
+  XWindowAttributes attr, focus_attr;
   XButtonEvent start;
   XEvent ev;
   for (;;) {
@@ -116,7 +116,6 @@ int main(void) {
     /* Force focus-follows-pointer to prevent focus stealing. */
     else if (ev.type == EnterNotify) {
       Window focus = ev.xcrossing.window;
-      XWindowAttributes focus_attr;
       XGetWindowAttributes(dpy, focus, &focus_attr);
       if (focus_attr.map_state == IsViewable) { // Only focus windows that are viewable.
         XSetInputFocus(dpy, focus, None, CurrentTime); } } } }
