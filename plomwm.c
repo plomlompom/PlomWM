@@ -1,8 +1,17 @@
-/* PlomWM 0.4.4 / written by Christian Heller <c.heller@plomlompom.de> / based on Nick Welch's TinyWM */
+/* PlomWM 0.4.5 / written by Christian Heller <c.heller@plomlompom.de> / based on Nick Welch's TinyWM */
 #include <stdlib.h>
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
+
+int XWindowInQueryTree(Display * dpy, Window root, Window window) {
+  /* Check if window is part of root's X11 QueryTree. */
+  Window dump; Window * w_tree; unsigned int w_count; int i;
+  XQueryTree(dpy, root, &dump, &dump, &w_tree, &w_count);
+  for (i = 0; i < w_count; i =i++) {
+    if (w_tree[i] == window) {
+      return 1; } }
+    return 0; }
 
 int main(void) {
   /* Connect to X server and determine root window. */
@@ -36,6 +45,8 @@ int main(void) {
 
   /* Window event loop. */
   XWindowAttributes attr, focus_attr;
+  XSetWindowAttributes new_attr;
+  new_attr.event_mask = EnterWindowMask;
   XButtonEvent start;
   XEvent ev;
   for (;;) {
@@ -105,16 +116,14 @@ int main(void) {
                        PropModeReplace, (unsigned char *) &a_geometry, 4); } }
 
     /* Store new windows' fullscreen properties (assume them to be negative), request their EnterNotify events. */
-    else if (ev.type == CreateNotify) {
-      XSetWindowAttributes y;
-      y.event_mask = EnterWindowMask;
-      XChangeWindowAttributes(dpy, ev.xcreatewindow.window, CWEventMask, &y);
+    else if (ev.type == CreateNotify && XWindowInQueryTree(dpy, root, ev.xcreatewindow.window) ) {
+      XChangeWindowAttributes(dpy, ev.xcreatewindow.window, CWEventMask, &new_attr);
       a_fullscreen[0] = 0;
       XChangeProperty(dpy, ev.xcreatewindow.window, IsFullscreen, XA_INTEGER, 8, 
-                      PropModeReplace, (unsigned char *) &a_fullscreen, 1); } 
+                      PropModeReplace, (unsigned char *) &a_fullscreen, 1); }
 
     /* Force focus-follows-pointer to prevent focus stealing. */
-    else if (ev.type == EnterNotify) {
+    else if (ev.type == EnterNotify && XWindowInQueryTree(dpy, root, ev.xcrossing.window) ) {
       Window focus = ev.xcrossing.window;
       XGetWindowAttributes(dpy, focus, &focus_attr);
       if (focus_attr.map_state == IsViewable) { // Only focus windows that are viewable.
